@@ -2,7 +2,6 @@ FROM alpine:latest
 
 RUN apk --no-cache upgrade \
  && apk --no-cache add sshpass openssh-client ca-certificates curl python-dev py-pip py-paramiko \
- && pip install --upgrade pip \
- && pip install ansible
+ && pip install --upgrade pip
 
-ENTRYPOINT ["ansible-playbook"]
+RUN pip install ansible docker-py

@@ -1,0 +1,25 @@
+#! /bin/bash -e
+
+if [[ -z "${PROJECT_ROOT}" ]]; then
+    echo 'Must set <PROJECT_ROOT>'
+    exit 1
+fi
+
+declare -r container_dir='/ansible'
+declare -r bin_dir="$(cd $(dirname $0); pwd)"
+declare -r pwd="$(pwd)"
+
+declare -r basename="$(basename $0)"
+declare -r entrypoint="${basename#docker-}"
+
+docker run \
+  --rm \
+  -it \
+  --env "ANSIBLE_SSH_CONTROL_PATH=/tmp/ansible-ssh-%%h-%%p-%%r" \
+  --env-file <(env | grep -E '^(ANSIBLE)_') \
+  -v "${HOME}/.ansible-vault":'/.ansible-vault' \
+  -v "${PROJECT_ROOT}":"${container_dir}" \
+  ${DOCKER_DNS_FLAGS} \
+  --entrypoint="${entrypoint}" \
+  daspoonman/ansible:${TAG:-latest} \
+  "$@"
