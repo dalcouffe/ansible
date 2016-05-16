@@ -8,7 +8,7 @@ fi
 declare -r container_dir='/ansible'
 declare -r bin_dir="$(cd $(dirname $0); pwd)"
 declare -r pwd="$(pwd)"
-
+declare -r work_dir="${container_dir}/${pwd#$PROJECT_ROOT}"
 declare -r basename="$(basename $0)"
 declare -r entrypoint="${basename#docker-}"
 
@@ -17,7 +17,8 @@ docker run \
   -it \
   --env "ANSIBLE_SSH_CONTROL_PATH=/tmp/ansible-ssh-%%h-%%p-%%r" \
   --env-file <(env | grep -E '^(ANSIBLE)_') \
-  -v "${HOME}/.ansible-vault":'/.ansible-vault' \
+  --workdir "${work_dir}" \
+  -v "${HOME}/.ansible-vault":"/root/.ansible-vault" \
   -v "${PROJECT_ROOT}":"${container_dir}" \
   ${DOCKER_DNS_FLAGS} \
   --entrypoint="${entrypoint}" \
