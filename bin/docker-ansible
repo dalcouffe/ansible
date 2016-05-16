@@ -10,7 +10,7 @@ declare -r bin_dir="$(cd $(dirname $0); pwd)"
 declare -r pwd="$(pwd)"
 declare -r work_dir="${container_dir}/${pwd#$PROJECT_ROOT}"
 declare -r basename="$(basename $0)"
-declare -r entrypoint="${basename#docker-}"
+declare -r entrypoint="${ENTRYPOINT:-${basename#docker-}}"
 
 docker run \
   --rm \
@@ -19,6 +19,7 @@ docker run \
   --env-file <(env | grep -E '^(ANSIBLE)_') \
   --workdir "${work_dir}" \
   -v "${HOME}/.ansible-vault":"/root/.ansible-vault" \
+  -v "${HOME}/.ssh":"/root/.ssh" \
   -v "${PROJECT_ROOT}":"${container_dir}" \
   ${DOCKER_DNS_FLAGS} \
   --entrypoint="${entrypoint}" \
